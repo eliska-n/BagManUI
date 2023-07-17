@@ -29,12 +29,10 @@ function FunPage() {
   );
 }
 
-function SaveNoteScreen( {props} ) {
+function SaveNoteScreen() {
 
   const [note, setNote] = useState('');
   const [url, setUrl] = useState(null);
-
-  const axios = props.axios
 
   const saveNote = async () => {
 
@@ -81,8 +79,12 @@ function SaveNoteScreen( {props} ) {
     let encryptedNoteBase64 = Base64.encodeURI(Base64.btoa(noteData.join("")));  // Use js-base64 library for URL safe encoding
 
     // send to BE
+    const client = axios.create({
+      baseURL: "/api",
+    });
+
     try {
-      let resp = await axios.post("/save-password", {id: ivBase64, password: encryptedNoteBase64, ttl: 1200}); // TODO - kolikje ttl? mělo by to být nastavitelné
+      let resp = await client.post("/save-password", {id: ivBase64, password: encryptedNoteBase64, ttl: 1200}); // TODO - kolikje ttl? mělo by to být nastavitelné
       console.log(resp.data);
       if (resp.data.result !== "OK") {
         // do something
@@ -118,11 +120,13 @@ function SaveNoteScreen( {props} ) {
   );
 }
 
-function DisplayNoteScreen( {props} ) {
+function DisplayNoteScreen() {
   const { iv, aes } = useParams();
 	console.log(iv, aes)
 
-  const axios = props.axios
+  const client = axios.create({
+    baseURL: "/api",
+  });
 
   const [note, setNote] = useState(null);
 
@@ -148,11 +152,11 @@ function DisplayNoteScreen( {props} ) {
   );
 }
 
-function BagmanRouter( {props} ) {
+function BagmanRouter() {
   return(
     <Routes>
-      <Route index element={< SaveNoteScreen props={props} />} />
-      <Route path="/:iv/:aes" element={<DisplayNoteScreen props={props} />} />
+      <Route index element={< SaveNoteScreen />} />
+      <Route path="/:iv/:aes" element={<DisplayNoteScreen />} />
     </Routes>
   )
 }
@@ -160,21 +164,9 @@ function BagmanRouter( {props} ) {
 
 function App() {
 
-  const client = axios.create({
-    baseURL: "/api",
-  });
-
-  const props = {
-    "axios": client
-  }
-
-  console.log("app")
-
   return (
     <div className="App">
-
-        <BagmanRouter  props={props} />
-
+        <BagmanRouter />
     </div>
   );
 }

@@ -80,7 +80,7 @@ function SaveNoteScreen() {
     });
 
     try {
-      let resp = await client.post("/save-password", {id: ivBase64, secret: encryptedNoteBase64, ttl: 60*30}); // TODO - kolikje ttl? mělo by to být nastavitelné
+      let resp = await client.post("/save-password", {id: ivBase64, secret: encryptedNoteBase64, expiration: 60*30}); // TODO - kolikje ttl? mělo by to být nastavitelné
       if (resp.data.result !== "OK") {
         // do something
       }
@@ -91,6 +91,10 @@ function SaveNoteScreen() {
     // show the URL to share the secret note
     setUrl(window.location.origin + "/#/" + ivBase64 + "/" + keyBase64)
   }
+
+  const copyURLToClipboard = () => {
+    navigator.clipboard.writeText(url)
+  };
 
   return (
     <>
@@ -114,7 +118,8 @@ function SaveNoteScreen() {
         <div className="row py-5">
           <div className="col">
             <h1>Use this URL to share the secret note</h1>
-            <p>{url}</p>
+            <p className="small">{url}</p>
+            <button className="btn btn-success" type="button" onClick={copyURLToClipboard}>Copy URL to clipboard</button>
           </div>
         </div>
       }
@@ -169,21 +174,46 @@ function DisplayNoteScreen() {
     setShow(true)
   };
 
+  const copySecretToClipboard = () => {
+    navigator.clipboard.writeText(note)
+  };
+
   return (
     <>
-      {showNote === false && <section id="reveal-secret">
-        <br></br>
-        <button onClick={revealSecret}>Reveal the secret</button>
-      </section>}
+      <div className="row py-5 justify-content-center">
+        <div className="col">
 
-      {note === null && showNote === true && <section id="display-note">
-        <h2> Secret note was not found :( </h2>
-      </section>}
+          {showNote === false &&
+            <button className="btn btn-primary" type="button" onClick={revealSecret}>Reveal the secret</button>
+          }
 
-      {note != null && showNote === true && <section id="display-note">
-        <h2> Here is your super secret note! </h2>
-        <p>{note}</p>
-      </section>}
+
+            {note === null && showNote === true &&
+              <div className="card">
+                <div className="card-header">
+                  Secret note was not found :( 
+                </div>
+                <div class="card-body">
+                  <h5 className="card-title">Sorry, I cannot reveal the secret.</h5>
+                </div>
+              </div>
+            }
+
+            {note != null && showNote === true &&
+              <div className="card">
+                <div className="card-header">
+                  Here is your super secret note!
+                </div>
+                <div class="card-body">
+                  <h5 className="card-title">{note}</h5>
+                  <button className="btn btn-success" onClick={copySecretToClipboard}>Copy secret to clipboard</button>
+                </div>
+              </div>
+            }
+
+        </div>
+      </div>
+
     </>
   );
 }

@@ -36,6 +36,10 @@ function SaveNoteScreen() {
 
   const saveNote = async () => {
 
+    const Uint8ArrayToBase64 = (array) => {
+      return Base64.fromUint8Array(array, true);
+    };
+
     // Make the textArea read only (TODO)
 
     // Generate AES key
@@ -50,18 +54,14 @@ function SaveNoteScreen() {
 
     // Encode AES into base64
     const keyExported = await window.crypto.subtle.exportKey("raw", key);
-    let keyData = [];
-    new Uint8Array(keyExported).forEach((byte) => keyData.push(String.fromCharCode(byte)));
-    let keyBase64 = Base64.encodeURI(Base64.btoa(keyData.join("")));  // Use js-base64 library for URL safe encoding
+    let keyBase64 = Uint8ArrayToBase64(new Uint8Array(keyExported))  // Use js-base64 library for URL safe encoding
 
     // Generate iv
-    const iv = window.crypto.getRandomValues(new Uint8Array(12));   // TODO: this is gonna be id in BE - is it big/random enough?
+    const iv = window.crypto.getRandomValues(new Uint8Array(12)); 
     // translate iv to base64
     // It becomes part of the URL
     // It becomes id of the record in BE database
-    let ivData = [];
-    iv.forEach((byte) => ivData.push(String.fromCharCode(byte)));
-    const ivBase64 = Base64.encodeURI(Base64.btoa(ivData.join("")));  // Use js-base64 library for URL safe encoding
+    const ivBase64 = Uint8ArrayToBase64(iv);  // Use js-base64 library for URL safe encoding
 
     // Encrypt the secret note
     const encoder = new TextEncoder("utf-8");
@@ -74,9 +74,9 @@ function SaveNoteScreen() {
     );
 
     // encrypted note to base64
-    let noteData = [];
-    new Uint8Array(encryptedNote).forEach((byte) => noteData.push(String.fromCharCode(byte)));
-    let encryptedNoteBase64 = Base64.encodeURI(Base64.btoa(noteData.join("")));  // Use js-base64 library for URL safe encoding
+    let encryptedNoteBase64 = Uint8ArrayToBase64(new Uint8Array(encryptedNote));  // Use js-base64 library for URL safe encoding
+    console.log("encrypted note base 64")
+    console.log(encryptedNoteBase64)
 
     // send to BE
     const client = axios.create({
@@ -94,8 +94,6 @@ function SaveNoteScreen() {
       console.log("error in BE call")
       console.error(error)
     }
-
-    console.log("setting url")
     // show the URL to share the secret note
     setUrl(window.location.origin + "/#/" + ivBase64 + "/" + keyBase64)
 
@@ -151,12 +149,25 @@ function DisplayNoteScreen() {
         }
       };
 
+      const Base64ToUint8Array = (base64) => {
+        return Base64.toUint8Array(base64, true);
+      };
+
       let resp = await fetchData();
       if ( resp !== null ) {
-        console.log(resp)
+        let encryptedNote = Base64ToUint8Array(resp);  // base64 to encrypted array
+        let decodedAES = Base64ToUint8Array(aes);  // base64 AES key to array
+        let decodedIV = Base64ToUint8Array(iv);  // base64 AES key to array
+        decodedAES = await window.crypto.subtle.importKey("raw", decodedAES, "AES-GCM", true, ["encrypt", "decrypt"])
+
+        let decryptedNote = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv: decodedIV }, decodedAES, encryptedNote);  // encrypted array to decrypted array
+
+        const decoder = new TextDecoder("utf-8");
+        secretNote = decoder.decode(decryptedNote);
       }
 
       if (!ignore) {
+        console.log("happens once")
         setNote(secretNote);
       }
 

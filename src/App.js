@@ -122,73 +122,62 @@ function SaveNoteScreen() {
 
 function DisplayNoteScreen() {
   const { iv, aes } = useParams();
-
   const [note, setNote] = useState(null);
+  const [showNote, setShow] = useState(false);
 
-  useEffect( () => {
+  const revealSecret = async () => {
 
-    const getSecretNote = async () => {
-
-      let ignore = false;  // https://react.dev/learn/synchronizing-with-effects#fetching-data
-      let secretNote = null
-
-      const fetchData = async () => {
-        let resp = null
-        try {
-          resp = await axios.get("/api/get-password", { params: { id: iv } })
-          return resp.data.data.secret
-        }
-        catch (error) {
-          if (error.request.status === 410) {
-            console.log("Requested password not found")
-          } else {
-            console.log("error in BE call")
-            console.error(error)
-          }
-          return null
-        }
-      };
-
-      const Base64ToUint8Array = (base64) => {
-        return Base64.toUint8Array(base64, true);
-      };
-
-      let resp = await fetchData();
-      if ( resp !== null ) {
-        let encryptedNote = Base64ToUint8Array(resp);  // base64 to encrypted array
-        let decodedAES = Base64ToUint8Array(aes);  // base64 AES key to array
-        let decodedIV = Base64ToUint8Array(iv);  // base64 AES key to array
-        decodedAES = await window.crypto.subtle.importKey("raw", decodedAES, "AES-GCM", true, ["encrypt", "decrypt"])
-
-        let decryptedNote = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv: decodedIV }, decodedAES, encryptedNote);  // encrypted array to decrypted array
-
-        const decoder = new TextDecoder("utf-8");
-        secretNote = decoder.decode(decryptedNote);
+    let secretNote = null
+    const fetchData = async () => {
+      let resp = null
+      try {
+        resp = await axios.get("/api/get-password", { params: { id: iv } })
+        return resp.data.data.secret
       }
-
-      if (!ignore) {
-        console.log("happens once")
-        setNote(secretNote);
+      catch (error) {
+        if (error.request.status === 410) {
+          console.log("Requested password not found")
+        } else {
+          console.log("error in BE call")
+          console.error(error)
+        }
+        return null
       }
-
-      return () => {
-        ignore = true;
-      };
-
     };
 
-    getSecretNote()
+    const Base64ToUint8Array = (base64) => {
+      return Base64.toUint8Array(base64, true);
+    };
 
-  }, []);
+    let resp = await fetchData();
+    if ( resp !== null ) {
+      let encryptedNote = Base64ToUint8Array(resp);  // base64 to encrypted array
+      let decodedAES = Base64ToUint8Array(aes);  // base64 AES key to array
+      let decodedIV = Base64ToUint8Array(iv);  // base64 AES key to array
+      decodedAES = await window.crypto.subtle.importKey("raw", decodedAES, "AES-GCM", true, ["encrypt", "decrypt"])
 
+      let decryptedNote = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv: decodedIV }, decodedAES, encryptedNote);  // encrypted array to decrypted array
+
+      const decoder = new TextDecoder("utf-8");
+      secretNote = decoder.decode(decryptedNote);
+    }
+
+    setNote(secretNote)
+    setShow(true)
+  };
 
   return (
     <>
-      {note == null && <section id="display-note">
+      {showNote === false && <section id="reveal-secret">
+        <br></br>
+        <button onClick={revealSecret}>Reveal the secret</button>
+      </section>}
+
+      {note === null && showNote === true && <section id="display-note">
         <h2> Secret note was not found :( </h2>
       </section>}
 
-      {note != null && <section id="display-note">
+      {note != null && showNote === true && <section id="display-note">
         <h2> Here is your super secret note! </h2>
         <p>{note}</p>
       </section>}

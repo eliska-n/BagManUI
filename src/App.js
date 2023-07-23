@@ -1,5 +1,3 @@
-import './App.css';
-import { Link } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -75,8 +73,6 @@ function SaveNoteScreen() {
 
     // encrypted note to base64
     let encryptedNoteBase64 = Uint8ArrayToBase64(new Uint8Array(encryptedNote));  // Use js-base64 library for URL safe encoding
-    console.log("encrypted note base 64")
-    console.log(encryptedNoteBase64)
 
     // send to BE
     const client = axios.create({
@@ -84,39 +80,46 @@ function SaveNoteScreen() {
     });
 
     try {
-      let resp = await client.post("/save-password", {id: ivBase64, secret: encryptedNoteBase64, ttl: 1200}); // TODO - kolikje ttl? mělo by to být nastavitelné
-      console.log(resp.data);
+      let resp = await client.post("/save-password", {id: ivBase64, secret: encryptedNoteBase64, ttl: 60*30}); // TODO - kolikje ttl? mělo by to být nastavitelné
       if (resp.data.result !== "OK") {
         // do something
       }
 
     } catch (error) {
-      console.log("error in BE call")
       console.error(error)
     }
     // show the URL to share the secret note
     setUrl(window.location.origin + "/#/" + ivBase64 + "/" + keyBase64)
-
-    
   }
 
   return (
-
     <>
-      <section id="password-entry">
-        <h2>Enter a Note</h2>
-        <textarea value={note} onChange={(event) => {setNote(event.target.value);}} rows="4" cols="50"></textarea>
-        <br></br>
-        <button onClick={saveNote}>Save Note</button>
-      </section>
+      <div className="row py-5 justify-content-center">
+        <div className="col-4">
+          <img src="./pssst.png" style={{maxWidth: "100%", maxHeight: "100%", objectFit: "contain"}}></img>
+        </div>
+      </div>
+      <div className="row py-5">
+        <div className="col">
+          <form id="password-entry">
+            <h1>Enter a Note</h1>
+            <textarea className="form-control" value={note} onChange={(event) => {setNote(event.target.value);}} rows="4" cols="50"></textarea>
+            <br></br>
+            <button className="btn btn-primary" type="button" onClick={saveNote}>Save Note</button>
+          </form>
+        </div>
+      </div>
 
-      {url != null && <section>
-        <h2> Use this URL to share the secret note</h2>
-        <p>{url}</p>
-      </section>}
+      {url != null &&
+        <div className="row py-5">
+          <div className="col">
+            <h1>Use this URL to share the secret note</h1>
+            <p>{url}</p>
+          </div>
+        </div>
+      }
+
     </>
-
-
   );
 }
 
@@ -198,7 +201,7 @@ function BagmanRouter() {
 function App() {
 
   return (
-    <div className="App">
+    <div className="container text-center">
         <BagmanRouter />
     </div>
   );

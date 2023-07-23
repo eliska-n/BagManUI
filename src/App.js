@@ -55,7 +55,7 @@ function SaveNoteScreen() {
     let keyBase64 = Base64.encodeURI(Base64.btoa(keyData.join("")));  // Use js-base64 library for URL safe encoding
 
     // Generate iv
-    const iv = window.crypto.getRandomValues(new Uint8Array(12)); 
+    const iv = window.crypto.getRandomValues(new Uint8Array(12));   // TODO: this is gonna be id in BE - is it big/random enough?
     // translate iv to base64
     // It becomes part of the URL
     // It becomes id of the record in BE database
@@ -84,7 +84,7 @@ function SaveNoteScreen() {
     });
 
     try {
-      let resp = await client.post("/save-password", {id: ivBase64, password: encryptedNoteBase64, ttl: 1200}); // TODO - kolikje ttl? mělo by to být nastavitelné
+      let resp = await client.post("/save-password", {id: ivBase64, secret: encryptedNoteBase64, ttl: 1200}); // TODO - kolikje ttl? mělo by to být nastavitelné
       console.log(resp.data);
       if (resp.data.result !== "OK") {
         // do something
@@ -95,8 +95,10 @@ function SaveNoteScreen() {
       console.error(error)
     }
 
+    console.log("setting url")
     // show the URL to share the secret note
     setUrl(window.location.origin + "/#/" + ivBase64 + "/" + keyBase64)
+
     
   }
 
@@ -122,33 +124,64 @@ function SaveNoteScreen() {
 
 function DisplayNoteScreen() {
   const { iv, aes } = useParams();
-	console.log(iv, aes)
-
-  const client = axios.create({
-    baseURL: "/api",
-  });
 
   const [note, setNote] = useState(null);
 
-  useEffect(() => {
-		const fetchData = async () => {
-      const resp = await axios.get("/get-password", {password: iv})
-      let encryptedNoteBase64 = resp.data.data.password
-      console.log(encryptedNoteBase64)
-			// setNote(resp)
-		}
-		fetchData();
-	}, []);
+  useEffect( () => {
+
+    const getSecretNote = async () => {
+
+      let ignore = false;  // https://react.dev/learn/synchronizing-with-effects#fetching-data
+      let secretNote = null
+
+      const fetchData = async () => {
+        let resp = null
+        try {
+          resp = await axios.get("/api/get-password", { params: { id: iv } })
+          return resp.data.data.secret
+        }
+        catch (error) {
+          if (error.request.status === 410) {
+            console.log("Requested password not found")
+          } else {
+            console.log("error in BE call")
+            console.error(error)
+          }
+          return null
+        }
+      };
+
+      let resp = await fetchData();
+      if ( resp !== null ) {
+        console.log(resp)
+      }
+
+      if (!ignore) {
+        setNote(secretNote);
+      }
+
+      return () => {
+        ignore = true;
+      };
+
+    };
+
+    getSecretNote()
+
+  }, []);
 
 
   return (
+    <>
+      {note == null && <section id="display-note">
+        <h2> Secret note was not found :( </h2>
+      </section>}
 
-      <section id="display-note">
-        <h2>Here is your super secret note!</h2>
-        <p> {iv} </p>
-
-      </section>
-
+      {note != null && <section id="display-note">
+        <h2> Here is your super secret note! </h2>
+        <p>{note}</p>
+      </section>}
+    </>
   );
 }
 

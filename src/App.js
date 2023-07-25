@@ -29,8 +29,10 @@ function FunPage() {
 
 function SaveNoteScreen() {
 
-  const [note, setNote] = useState('');
-  const [url, setUrl] = useState(null);
+  const [note, setNote] = useState(''); // to keep note being written into the text area
+  const [url, setUrl] = useState(null); // to picture the url on UI
+  const [disabledTextArea, setTextAreaDisabled] = useState(false) // to disable text area when save button is hit
+  const [toggleOn, setToggle] = useState(true) // to change save button into start again button
 
   const saveNote = async () => {
 
@@ -38,7 +40,8 @@ function SaveNoteScreen() {
       return Base64.fromUint8Array(array, true);
     };
 
-    // Make the textArea read only (TODO)
+    // Make the textArea read only
+    setTextAreaDisabled(true)
 
     // Generate AES key
     let key = await window.crypto.subtle.generateKey(
@@ -90,7 +93,15 @@ function SaveNoteScreen() {
     }
     // show the URL to share the secret note
     setUrl(window.location.origin + "/#/" + ivBase64 + "/" + keyBase64)
+    setToggle(false)
   }
+
+  const startAgain = () => {
+    setNote("")
+    setTextAreaDisabled(false)
+    setUrl(null)
+    setToggle(true)
+  };
 
   const copyURLToClipboard = () => {
     navigator.clipboard.writeText(url)
@@ -107,9 +118,10 @@ function SaveNoteScreen() {
         <div className="col">
           <form id="password-entry">
             <h1>Enter a Note</h1>
-            <textarea className="form-control" value={note} onChange={(event) => {setNote(event.target.value);}} rows="4" cols="50"></textarea>
+            <textarea id="text-area" disabled={disabledTextArea} className="form-control" value={note} onChange={(event) => {setNote(event.target.value);}} rows="4" cols="20"></textarea>
             <br></br>
-            <button className="btn btn-primary" type="button" onClick={saveNote}>Save Note</button>
+            {toggleOn === true && <button className="btn btn-primary" type="button" onClick={saveNote}>Save Note</button>}
+            {toggleOn === false && <button className="btn btn-primary" type="button" onClick={startAgain}>Start Again</button>}
           </form>
         </div>
       </div>
@@ -127,6 +139,8 @@ function SaveNoteScreen() {
     </>
   );
 }
+
+
 
 function DisplayNoteScreen() {
   const { iv, aes } = useParams();

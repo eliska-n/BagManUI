@@ -33,6 +33,7 @@ function SaveNoteScreen() {
   const [url, setUrl] = useState(null); // to picture the url on UI
   const [disabledTextArea, setTextAreaDisabled] = useState(false) // to disable text area when save button is hit
   const [toggleOn, setToggle] = useState(true) // to change save button into start again button
+  const [expiration, setExpiration] = useState(0.5) // to set the time to delete the secret note on BE
 
   const saveNote = async () => {
 
@@ -83,7 +84,7 @@ function SaveNoteScreen() {
     });
 
     try {
-      let resp = await client.post("/save-password", {id: ivBase64, secret: encryptedNoteBase64, expiration: 60*30}); // TODO - kolikje ttl? mělo by to být nastavitelné
+      let resp = await client.post("/save-password", {id: ivBase64, secret: encryptedNoteBase64, expiration: expiration*60*60});
       if (resp.data.result !== "OK") {
         // do something
       }
@@ -101,6 +102,7 @@ function SaveNoteScreen() {
     setTextAreaDisabled(false)
     setUrl(null)
     setToggle(true)
+    setExpiration(0.5)
   };
 
   const copyURLToClipboard = () => {
@@ -119,6 +121,9 @@ function SaveNoteScreen() {
           <form id="password-entry">
             <h1>Enter a Note</h1>
             <textarea id="text-area" disabled={disabledTextArea} className="form-control" value={note} onChange={(event) => {setNote(event.target.value);}} rows="4" cols="20"></textarea>
+            <label htmlFor="expiration">Set the expiration of the secret note</label>
+            <input id="expiration" type="range" disabled={disabledTextArea} className="form-range" value={expiration} onChange={(event) => {setExpiration(event.target.value);}} min="0" max="24" step="0.25"></input>
+            <p className="small"> Expiration set to {(expiration | 0)} hours and {(expiration - (expiration | 0)) * 60} minutes.</p>
             <br></br>
             {toggleOn === true && <button className="btn btn-primary" type="button" onClick={saveNote}>Save Note</button>}
             {toggleOn === false && <button className="btn btn-primary" type="button" onClick={startAgain}>Start Again</button>}

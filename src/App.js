@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import { useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import { Base64 } from 'js-base64';
 import axios from 'axios';

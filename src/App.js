@@ -113,41 +113,45 @@ function SaveNoteScreen() {
     <>
       <div className="row py-5 justify-content-center">
         <div className="col-4 col-lg-3">
-          <img src="./pssst.png" style={{maxWidth: "100%", maxHeight: "100%", objectFit: "contain"}}></img>
+          <img src="./img/pssst.png" style={{maxWidth: "100%", maxHeight: "100%", objectFit: "contain"}}></img>
         </div>
       </div>
       <div className="row py-5 justify-content-center">
         <div className="col-12 col-lg-6">
 
-          <div className="card">
-            <div className="card-header">
-              Save the secret
-            </div>
-            <div className="card-body">
-              {toggleOn === true &&
-                <>
-                <h1 className="card-title">Enter a secret note</h1>
+          <div className="card shadow">
+            {toggleOn === true &&
+              <>
+              <div className="card-header">
+                <h1>Enter a secret note</h1>
+              </div>
+              <div className="card-body">
                 <form id="password-entry">
-                  <textarea id="text-area" disabled={disabledTextArea} className="form-control card-text" value={note} onChange={(event) => {setNote(event.target.value);}} rows="4" cols="20"></textarea>
+                  <textarea id="text-area" disabled={disabledTextArea} className="form-control card-text font-monospace" value={note} onChange={(event) => {setNote(event.target.value);}} rows="4" cols="20"></textarea>
                   <label htmlFor="expiration" className="card-text">Set the expiration of the secret note</label>
                   <input id="expiration" type="range" disabled={disabledTextArea} className="form-range" value={expiration} onChange={(event) => {setExpiration(event.target.value);}} min="0" max="24" step="0.25"></input>
                   <p className="small card-text"> Expiration set to {(expiration | 0)} hours and {(expiration - (expiration | 0)) * 60} minutes.</p>
                   <button className="btn btn-primary btn-lg" type="button" onClick={saveNote}>Save Note</button>
                 </form>
-                </>
-              }
+              </div>
+              </>
+            }
 
-              {toggleOn === false &&
-                <>
-                <h1 className="card-title">Share the secret with this URL</h1>
+            {toggleOn === false &&
+              <>
+              <div className="card-header">
+                <h1>Share the secret</h1>
+              </div>
+              <div className="card-body">
                 <p className="small card-text">{url}</p>
                 <div className="d-grid gap-2 col-lg-6 mx-auto">
                   <button className="btn btn-primary" type="button" onClick={copyURLToClipboard}>Copy URL to clipboard</button>
                   <button className="btn btn-secondary btn-sm" type="button" onClick={startAgain}>Start Again</button>
                 </div>
-                </>
-              }
-            </div>
+              </div>
+              </>
+            }
+
           </div>
 
         </div>
@@ -192,9 +196,9 @@ function DisplayNoteScreen() {
       let encryptedNote = Base64ToUint8Array(resp);  // base64 to encrypted array
       let decodedAES = Base64ToUint8Array(aes);  // base64 AES key to array
       let decodedIV = Base64ToUint8Array(iv);  // base64 AES key to array
-      decodedAES = await window.crypto.subtle.importKey("raw", decodedAES, "AES-GCM", true, ["encrypt", "decrypt"])
+      decodedAES = await window.crypto.subtle.importKey("raw", decodedAES, "AES-GCM", true, ["encrypt", "decrypt"])  // TODO: try catch - if the URL is not valid
 
-      let decryptedNote = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv: decodedIV }, decodedAES, encryptedNote);  // encrypted array to decrypted array
+      let decryptedNote = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv: decodedIV }, decodedAES, encryptedNote);  // TODO: try catch - if the URL is not valid
 
       const decoder = new TextDecoder("utf-8");
       secretNote = decoder.decode(decryptedNote);
@@ -211,17 +215,22 @@ function DisplayNoteScreen() {
   return (
     <>
       <div className="row py-5 justify-content-center">
+        <div className="col-4 col-lg-4">
+          <img src="./img/teskalabs-logo.svg" style={{maxWidth: "100%", maxHeight: "100%", objectFit: "contain"}}></img>
+        </div>
+      </div>
+      <div className="row py-5 justify-content-center">
         <div className="col-12 col-lg-6">
 
           {showNote === false &&
-            <button className="btn btn-primary" type="button" onClick={revealSecret}>Reveal the secret</button>
+            <button className="btn btn-primary btn-lg" type="button" onClick={revealSecret}>Reveal the secret</button>
           }
 
 
             {note === null && showNote === true &&
-              <div className="card">
+              <div className="card shadow">
                 <div className="card-header">
-                  Secret note was not found :( 
+                  <h2>Secret note was not found :(</h2>
                 </div>
                 <div className="card-body">
                   <h5 className="card-title">Sorry, I cannot reveal the secret.</h5>
@@ -232,10 +241,10 @@ function DisplayNoteScreen() {
             {note != null && showNote === true &&
               <div className="card">
                 <div className="card-header">
-                  Here is your super secret note!
+                  <h2>Here is your super secret note!</h2>
                 </div>
                 <div class="card-body">
-                  <h5 className="card-title">{note}</h5>
+                  <textarea id="text-area" disabled className="form-control card-text font-monospace" value={note} rows="4" cols="20"></textarea>
                   <button className="btn btn-success" onClick={copySecretToClipboard}>Copy secret to clipboard</button>
                 </div>
               </div>

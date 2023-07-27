@@ -132,7 +132,7 @@ function SaveNoteScreen() {
                   <label htmlFor="expiration" className="card-text">Set the expiration of the secret note</label>
                   <input id="expiration" type="range" disabled={disabledTextArea} className="form-range" value={expiration} onChange={(event) => {setExpiration(event.target.value);}} min="0" max="24" step="0.25"></input>
                   <p className="small card-text"> Expiration set to {(expiration | 0)} hours and {(expiration - (expiration | 0)) * 60} minutes.</p>
-                  <button className="btn btn-primary" type="button" onClick={saveNote}>Save Note</button>
+                  <button className="btn btn-primary btn-lg" type="button" onClick={saveNote}>Save Note</button>
                 </form>
                 </>
               }
@@ -143,7 +143,7 @@ function SaveNoteScreen() {
                 <p className="small card-text">{url}</p>
                 <div className="d-grid gap-2 col-lg-6 mx-auto">
                   <button className="btn btn-primary" type="button" onClick={copyURLToClipboard}>Copy URL to clipboard</button>
-                  <button className="btn btn-primary btn-sm" type="button" onClick={startAgain}>Start Again</button>
+                  <button className="btn btn-secondary btn-sm" type="button" onClick={startAgain}>Start Again</button>
                 </div>
                 </>
               }
@@ -261,9 +261,9 @@ function BagmanRouter() {
 function App() {
 
   return (
-    <div className="container text-center">
-        <BagmanRouter />
-    </div>
+      <div className="container text-center">
+          <BagmanRouter />
+      </div>
   );
 }
 

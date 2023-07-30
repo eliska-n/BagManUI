@@ -22,7 +22,7 @@ function UnicornsScreen() {
   Even if the pirates stole all the boxes, they could not open them without the keys.
   `
 
-  const pageFourText = `Now Alice must send a key and ID of the box to Bob.
+  const pageFourText = `Now, Alice must send a key and ID of the box to Bob.
   Secrets should have as short expiration as possible.
   If a pirate reads this message with the key and ID inside (the link from this application), he would need to find Frank's island (the server) before the secret explodes.
   When Bob reads the message, he has everything to get the secret from Frank.

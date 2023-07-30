@@ -243,7 +243,7 @@ function DisplayNoteScreen() {
                     <textarea id="text-area" disabled className="form-control card-text font-monospace" value={note} rows="4" cols="20"></textarea>
                   </pre>
                 </div>
-                <button className="btn btn-primary" onClick={copySecretToClipboard}>Copy secret to clipboard</button>
+                <button className="btn btn-primary btn-lg" onClick={copySecretToClipboard}>Copy secret to clipboard</button>
               </div>
             </>
           }

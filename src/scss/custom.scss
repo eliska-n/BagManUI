@@ -11,11 +11,12 @@
 //#FFAFF0 - light pink
 //#FCD021 - yellow
 //#104547 - green
+//#edc5e6 - background pink
 
 $primary: #FCD021;
 $secondary: #A51080;
 $green: #104547;
-$lightpink: #FFAFF0;
+$lightpink: #edc5e6;
 $form-range-thumb-bg: $secondary;
 $form-range-track-bg: $lightpink;
 
@@ -53,7 +54,7 @@ body {
   }
 
 .card {
-	background-color: rgba(var(--bs-body-bg-rgb), 0.9);
+	background-color: rgba(var(--bs-body-bg-rgb), 0.75);
 }
 
 // You can add more styles here...

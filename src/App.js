@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 import { useParams } from 'react-router-dom';
 import { useState } from 'react';
 
@@ -16,7 +16,7 @@ if (!("TextDecoder" in window))
 
 
 
-function FunPage() {
+function UnicornsScreen() {
   return (
     <section id="fun-page">
     <h2>How It Works</h2>
@@ -25,6 +25,22 @@ function FunPage() {
     </p>
   </section>
   );
+}
+
+function LinkToUnicorns() {
+  return (
+    <div className="row py-4 justify-content-center">
+      <div className="col-12 col-lg-6">
+        <div className="card shadow">
+          <div className="card-body" style={{backgroundColor: "rgba(165, 16, 128, 0.75)"}}>
+            <a class="link-light icon-link icon-link-hover" href="#/unicrons">
+            Is it safe? Tell me how it works!
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 function SaveNoteScreen() {
@@ -111,12 +127,12 @@ function SaveNoteScreen() {
 
   return (
     <>
-      <div className="row py-5 justify-content-center">
+      <div className="row py-3 justify-content-center">
         <div className="col-4 col-lg-3">
           <img src="./img/pssst.png" style={{maxWidth: "100%", maxHeight: "100%", objectFit: "contain"}}></img>
         </div>
       </div>
-      <div className="row py-5 justify-content-center">
+      <div className="row py-4 justify-content-center">
         <div className="col-12 col-lg-6">
 
           <div className="card shadow">
@@ -127,7 +143,7 @@ function SaveNoteScreen() {
               </div>
               <div className="card-body">
                 <form id="password-entry">
-                  <textarea id="text-area" disabled={disabledTextArea} className="form-control card-text font-monospace" value={note} onChange={(event) => {setNote(event.target.value);}} rows="4" cols="20"></textarea>
+                  <textarea id="text-area" disabled={disabledTextArea} className="form-control card-text font-monospace" value={note} onChange={(event) => { setNote(event.target.value); }} rows="4" cols="20"></textarea>
                   <label htmlFor="expiration" className="card-text">Set the expiration of the secret note</label>
                   <input id="expiration" type="range" disabled={disabledTextArea} className="form-range" value={expiration} onChange={(event) => {setExpiration(event.target.value);}} min="0" max="24" step="0.25"></input>
                   <p className="small card-text"> Expiration set to {(expiration | 0)} hours and {(expiration - (expiration | 0)) * 60} minutes.</p>
@@ -153,9 +169,11 @@ function SaveNoteScreen() {
             }
 
           </div>
-
         </div>
       </div>
+
+      < LinkToUnicorns />
+
     </>
   );
 }
@@ -219,6 +237,7 @@ function DisplayNoteScreen() {
           <img src="./img/teskalabs-logo.svg" style={{maxWidth: "100%", maxHeight: "100%", objectFit: "contain"}}></img>
         </div>
       </div>
+
       <div className="row py-5 justify-content-center">
         <div className="col-12 col-lg-6">
 
@@ -226,33 +245,31 @@ function DisplayNoteScreen() {
             <button className="btn btn-primary btn-lg" type="button" onClick={revealSecret}>Reveal the secret</button>
           }
 
-
-            {note === null && showNote === true &&
-              <div className="card shadow">
-                <div className="card-header">
-                  <h2>Secret note was not found :(</h2>
-                </div>
-                <div className="card-body">
-                  <h5 className="card-title">Sorry, I cannot reveal the secret.</h5>
-                </div>
+          {note === null && showNote === true &&
+            <div className="card shadow">
+              <div className="card-header">
+                <h2>Secret note was not found :(</h2>
               </div>
-            }
-
-            {note != null && showNote === true &&
-              <div className="card">
-                <div className="card-header">
-                  <h2>Here is your super secret note!</h2>
-                </div>
-                <div class="card-body">
-                  <textarea id="text-area" disabled className="form-control card-text font-monospace" value={note} rows="4" cols="20"></textarea>
-                  <button className="btn btn-success" onClick={copySecretToClipboard}>Copy secret to clipboard</button>
-                </div>
+              <div className="card-body">
+                <h5 className="card-title">Sorry, I cannot reveal the secret.</h5>
               </div>
-            }
+            </div>
+          }
+
+          {note != null && showNote === true &&
+            <div className="card">
+              <div className="card-header">
+                <h2>Here is your super secret note!</h2>
+              </div>
+              <div class="card-body">
+                <textarea id="text-area" disabled className="form-control card-text font-monospace" value={note} rows="4" cols="20"></textarea>
+                <button className="btn btn-success" onClick={copySecretToClipboard}>Copy secret to clipboard</button>
+              </div>
+            </div>
+          }
 
         </div>
       </div>
-
     </>
   );
 }
@@ -262,6 +279,7 @@ function BagmanRouter() {
     <Routes>
       <Route index element={< SaveNoteScreen />} />
       <Route path="/:iv/:aes" element={<DisplayNoteScreen />} />
+      <Route path="/unicorns" element={<UnicornsScreen />} />
     </Routes>
   )
 }

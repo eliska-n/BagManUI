@@ -1,4 +1,4 @@
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useParams } from 'react-router-dom';
 import { useState } from 'react';
 

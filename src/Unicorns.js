@@ -5,7 +5,7 @@ function UnicornsScreen() {
   return (
     <>
     <div className="row py-4 justify-content-center">
-      <div className="col-12">
+      <div className="col-12 col-lg-10">
         <div className="card shadow">
 
           <div className="card-header">
@@ -42,6 +42,16 @@ function UnicornsScreen() {
 
           </div>
         </div>
+      </div>
+    </div>
+
+    <div className="row justify-content-center">
+      <div className="col-12 col-lg-6">
+        <ul class="nav nav-pills justify-content-center">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/">Back to the app</a>
+          </li>
+        </ul>
       </div>
     </div>
     </>

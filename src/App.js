@@ -130,12 +130,12 @@ function SaveNoteScreen() {
             {toggleOn === false &&
               <>
               <div className="card-header">
-                <h1>Share the secret</h1>
+                <h1>Share the link</h1>
               </div>
               <div className="card-body">
                 <p className="small card-text">{url}</p>
                 <div className="d-grid gap-2 col-lg-6 mx-auto">
-                  <button className="btn btn-primary" type="button" onClick={copyURLToClipboard}>Copy URL to clipboard</button>
+                  <button className="btn btn-primary btn-lg" type="button" onClick={copyURLToClipboard}>Copy URL to clipboard</button>
                   <button className="btn btn-secondary btn-sm" type="button" onClick={startAgain}>Start Again</button>
                 </div>
               </div>
@@ -251,6 +251,8 @@ function DisplayNoteScreen() {
 
         </div>
       </div>
+
+      < LinkToUnicorns />
     </>
   );
 }

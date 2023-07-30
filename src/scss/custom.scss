@@ -57,6 +57,10 @@ body {
 	background-color: rgba(var(--bs-body-bg-rgb), 0.75);
 }
 
+.mt-a-lot {
+	margin-top: ($spacer * 15);
+  }
+
 // You can add more styles here...
 
 

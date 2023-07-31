@@ -9,8 +9,8 @@ function UnicornsScreen() {
   She always encrypts the secret before sending it to Bob. And that's what this application does for you.`
 
   const pageTwoText = `First, Alice creates an AES key.
-  With this key she can encyŕypt the secret - lock it into a secure box.
-  She creates also an ID - a unique identificator for the secret pictured here as the pink circle.
+  With this key she can encrypt the secret - lock it into a secure box.
+  She creates also an ID - a unique identifier for the secret pictured here as the pink circle.
   Alice also decides how long the secret should be available to Bob.
   The shorter the period, the safer.
   She sets the expiration to 15 minutes.`

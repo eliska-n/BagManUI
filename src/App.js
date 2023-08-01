@@ -72,7 +72,7 @@ function SaveNoteScreen() {
     });
 
     try {
-      let resp = await client.post("/save-note", {id: ivBase64, secret: encryptedNoteBase64, expiration: expiration*60*60});
+      let resp = await client.post("/note", {id: ivBase64, secret: encryptedNoteBase64, expiration: expiration*60*60});
       if (resp.data.result !== "OK") {
         // do something
       }
@@ -165,7 +165,7 @@ function DisplayNoteScreen() {
     const fetchData = async () => {
       let resp = null
       try {
-        resp = await axios.get("/api/get-note", { params: { id: iv } })
+        resp = await axios.get(`/api/note/${iv}`)
         return resp.data.data.secret
       }
       catch (error) {

@@ -17,7 +17,7 @@ function UnicornsScreen() {
 
   const pageThreeText = `Alice must never send the key and the box together.
   There is an island in the ocean (a server) with Frank.
-  Frank's job is to receive boxes, read expiration and attach dynamit and timer to it, so the boxes blow up when the time comes.
+  Frank's job is to receive boxes, read expiration and attach dynamite and timer to it, so the boxes blow up when the time comes.
   Then, Frank stores these boxes. He can never read the secrets inside.
   Even if the pirates stole all the boxes, they could not open them without the keys.
   `

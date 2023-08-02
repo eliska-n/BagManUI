@@ -15,14 +15,13 @@ if (!("TextDecoder" in window))
   alert("Sorry, this browser does not support TextDecoder...");
 
 
-function SaveNoteScreen() {
+function SaveNoteScreen({ setAlert }) {
 
   const [note, setNote] = useState(''); // to keep note being written into the text area
   const [url, setUrl] = useState(null); // to picture the url on UI
   const [disabledTextArea, setTextAreaDisabled] = useState(false) // to disable text area when save button is hit
   const [toggleOn, setToggle] = useState(true) // to change save button into start again button
   const [expiration, setExpiration] = useState(0.5) // to set the time to delete the secret note on BE
-  const [alert, setAlert] = useState(null)
 
   const saveNote = async () => {
 
@@ -102,13 +101,6 @@ function SaveNoteScreen() {
 
   return (
     <>
-      {alert !== null &&
-        <div className="alert alert-primary alert-dismissible fixed-top" role="alert">
-          {alert}
-          <button type="button" className="btn-close" onClick={() => {setAlert(null);}}></button>
-        </div>
-      }
-
       <div className="row py-3 justify-content-center">
         <div className="col-4 col-lg-3">
           <img src="./img/pssst.png" style={{maxWidth: "100%", maxHeight: "100%", objectFit: "contain"}}></img>
@@ -288,10 +280,10 @@ function DisplayNoteScreen() {
   );
 }
 
-function BagmanRouter() {
+function BagmanRouter({setAlert}) {
   return(
     <Routes>
-      <Route index element={< SaveNoteScreen />} />
+      <Route index element={< SaveNoteScreen setAlert={setAlert}/>} />
       <Route path="/:iv/:aes" element={<DisplayNoteScreen />} />
       <Route path="/unicorns" element={<UnicornsScreen />} />
     </Routes>
@@ -300,11 +292,23 @@ function BagmanRouter() {
 
 
 function App() {
+  const [alert, setAlert] = useState(null)
 
   return (
-      <div className="container text-center">
-          <BagmanRouter />
+    <>
+      {alert !== null &&
+      <div className="alerts">
+        <div className="alert alert-primary alert-dismissible" role="alert">
+          {alert}
+          <button type="button" className="btn-close" onClick={() => {setAlert(null);}}></button>
+        </div>
       </div>
+      }
+      <div className="container text-center">
+          <BagmanRouter setAlert={setAlert}/>
+      </div>
+    </>
+
   );
 }
 

@@ -72,7 +72,7 @@ function SaveNoteScreen() {
     });
 
     try {
-      let resp = await client.post("/save-password", {id: ivBase64, secret: encryptedNoteBase64, expiration: expiration*60*60});
+      let resp = await client.post("/note", {id: ivBase64, secret: encryptedNoteBase64, expiration: expiration*60*60});
       if (resp.data.result !== "OK") {
         // do something
       }
@@ -114,7 +114,7 @@ function SaveNoteScreen() {
                 <h1>Enter a secret note</h1>
               </div>
               <div className="card-body">
-                <form id="password-entry">
+                <form id="note-entry">
                   <div className="py-2">
                     <textarea id="text-area" disabled={disabledTextArea} className="form-control card-text font-monospace" value={note} onChange={(event) => { setNote(event.target.value); }} rows="4" cols="20"></textarea>
                   </div>
@@ -165,12 +165,12 @@ function DisplayNoteScreen() {
     const fetchData = async () => {
       let resp = null
       try {
-        resp = await axios.get("/api/get-password", { params: { id: iv } })
+        resp = await axios.get(`/api/note/${iv}`)
         return resp.data.data.secret
       }
       catch (error) {
         if (error.request.status === 410) {
-          console.log("Requested password not found")
+          console.log("Requested note not found")
         } else {
           console.log("error in BE call")
           console.error(error)
@@ -202,6 +202,24 @@ function DisplayNoteScreen() {
 
   const copySecretToClipboard = () => {
     navigator.clipboard.writeText(note)
+  };
+
+  const deleteNote = async () => {
+    const deleteData = async () => {
+      let resp = null
+      try {
+        resp = await axios.delete(`/api/note/${iv}`)
+        return resp.data.message
+      }
+      catch (error) {
+        if (error.request.status !== 200) {
+          console.log("error in BE call")
+          console.error(error)
+        }
+        return null
+      }
+    };
+    await deleteData()
   };
 
   return (
@@ -244,6 +262,7 @@ function DisplayNoteScreen() {
                   </pre>
                 </div>
                 <button className="btn btn-primary btn-lg" onClick={copySecretToClipboard}>Copy secret to clipboard</button>
+                <button className="btn btn-danger btn-lg" onClick={deleteNote}>Delete Note</button>
               </div>
             </>
           }

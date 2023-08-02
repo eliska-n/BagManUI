@@ -23,5 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 
 .sass-cache
-./src/scss/custom.css
-./src/scss/custom.css.map
+/src/scss/custom.css
+/src/scss/custom.css.map

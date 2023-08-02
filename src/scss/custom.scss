@@ -52,9 +52,13 @@ $form-range-track-bg: $lightpink;
 @import "../../node_modules/bootstrap/scss/utilities/api";
 
 // 8. Add additional custom code here
+// body {
+// 	background-image: url('./../img/tiles.png');
+// 	background-repeat: no-repeat;
+//   }
+
 body {
-	background-image: url('./../img/tiles.png');
-	background-repeat: no-repeat;
+	background-color:$lightpink
   }
 
 .card {
@@ -64,6 +68,7 @@ body {
 .mt-a-lot {
 	margin-top: ($spacer * 15);
   }
+
 
 // You can add more styles here...
 

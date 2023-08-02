@@ -45,6 +45,8 @@ $form-range-track-bg: $lightpink;
 @import "../../node_modules/bootstrap/scss/card";
 @import "../../node_modules/bootstrap/scss/carousel";
 @import "../../node_modules/bootstrap/scss/nav";
+@import "../../node_modules/bootstrap/scss/alert";
+@import "../../node_modules/bootstrap/scss/close";
 
 // 7. Optionally include utilities API last to generate classes based on the Sass map in `_utilities.scss`
 @import "../../node_modules/bootstrap/scss/utilities/api";
@@ -77,10 +79,8 @@ body {
 // @import "breadcrumb";
 // @import "pagination";
 // @import "badge";
-// @import "alert";
 // @import "progress";
 // @import "list-group";
-// @import "close";
 // @import "toasts";
 // @import "modal";
 // @import "tooltip";

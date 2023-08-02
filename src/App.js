@@ -22,6 +22,7 @@ function SaveNoteScreen() {
   const [disabledTextArea, setTextAreaDisabled] = useState(false) // to disable text area when save button is hit
   const [toggleOn, setToggle] = useState(true) // to change save button into start again button
   const [expiration, setExpiration] = useState(0.5) // to set the time to delete the secret note on BE
+  const [alert, setAlert] = useState(null)
 
   const saveNote = async () => {
 
@@ -74,11 +75,13 @@ function SaveNoteScreen() {
     try {
       let resp = await client.post("/note", {id: ivBase64, secret: encryptedNoteBase64, expiration: expiration*60*60});
       if (resp.data.result !== "OK") {
-        // do something
+        setAlert("Sorry, the secret note was not saved.")
+        return
       }
 
     } catch (error) {
-      console.error(error)
+      setAlert("Sorry, the secret note was not saved.")
+      return
     }
     // show the URL to share the secret note
     setUrl(window.location.origin + "/#/" + ivBase64 + "/" + keyBase64)
@@ -99,6 +102,13 @@ function SaveNoteScreen() {
 
   return (
     <>
+      {alert !== null &&
+        <div className="alert alert-primary alert-dismissible fixed-top" role="alert">
+          {alert}
+          <button type="button" className="btn-close" onClick={() => {setAlert(null);}}></button>
+        </div>
+      }
+
       <div className="row py-3 justify-content-center">
         <div className="col-4 col-lg-3">
           <img src="./img/pssst.png" style={{maxWidth: "100%", maxHeight: "100%", objectFit: "contain"}}></img>
@@ -147,6 +157,8 @@ function SaveNoteScreen() {
       </div>
 
       < LinkToUnicorns />
+
+
 
     </>
   );

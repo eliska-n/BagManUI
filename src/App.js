@@ -204,6 +204,24 @@ function DisplayNoteScreen() {
     navigator.clipboard.writeText(note)
   };
 
+  const deleteNote = async () => {
+    const deleteData = async () => {
+      let resp = null
+      try {
+        resp = await axios.delete(`/api/note/${iv}`)
+        return resp.data.message
+      }
+      catch (error) {
+        if (error.request.status !== 200) {
+          console.log("error in BE call")
+          console.error(error)
+        }
+        return null
+      }
+    };
+    await deleteData()
+  };
+
   return (
     <>
       <div className="row py-5 mt-a-lot justify-content-center">
@@ -244,6 +262,7 @@ function DisplayNoteScreen() {
                   </pre>
                 </div>
                 <button className="btn btn-primary btn-lg" onClick={copySecretToClipboard}>Copy secret to clipboard</button>
+                <button className="btn btn-danger btn-lg" onClick={deleteNote}>Delete Note</button>
               </div>
             </>
           }

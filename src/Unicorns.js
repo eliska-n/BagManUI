@@ -78,7 +78,7 @@ function UnicornsScreen() {
 
               <div className="row justify-content-center">
                 <div className="col-12 col-lg-10">
-                  <input id="page" type="range" className="form-range" value={page} onChange={(event) => { setPage(event.target.value); }} min="1" max="5" step="1"></input>
+                  <input id="page" type="range" className="form-range" value={page} onChange={(event) => { setPage(parseInt(event.target.value)); }} min="1" max="5" step="1"></input>
                 </div>
               </div>
 

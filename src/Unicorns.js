@@ -8,7 +8,7 @@ function UnicornsScreen() {
   Alice and Bob are split by the dangerous ocean of the internet, full of pirates always ready to steal unprotected secrets.
   She always encrypts the secret before sending it to Bob. And that's what this application does for you.`
 
-  const pageTwoText = `First, Alice creates an AES key.
+  const pageTwoText = `First, Alice creates a secret key.
   With this key she can encrypt the secret - lock it into a secure box.
   She creates also an ID - a unique identifier for the secret pictured here as the pink circle.
   Alice also decides how long the secret should be available to Bob.
@@ -16,9 +16,9 @@ function UnicornsScreen() {
   She sets the expiration to 15 minutes.`
 
   const pageThreeText = `Alice must never send the key and the box together.
-  There is an island in the ocean (a server) with Frank.
+  There is an island (a server) with Frank.
   Frank's job is to receive boxes, read expiration and attach dynamite and timer to it, so the boxes blow up when the time comes.
-  Then, Frank stores these boxes. He can never read the secrets inside.
+  Then, Frank stores these boxes. He can never read the secrets inside because he doesn't have the secret key.
   Even if the pirates stole all the boxes, they could not open them without the keys.
   `
 

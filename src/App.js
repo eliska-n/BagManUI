@@ -170,10 +170,11 @@ function SaveNoteScreen({ setAlert }) {
 
 
 
-function DisplayNoteScreen() {
+function DisplayNoteScreen( setAlert ) {
   const { iv, aes } = useParams();
   const [note, setNote] = useState(null);
   const [showNote, setShow] = useState(false);
+  const [deleted, setDeleted] = useState(false)
 
   const revealSecret = async () => {
 
@@ -225,17 +226,19 @@ function DisplayNoteScreen() {
       let resp = null
       try {
         resp = await axios.delete(`/api/note/${iv}`)
-        return resp.data.message
+        if (resp.data.result !== "OK") {
+          setAlert("Sorry, the secret note was not deleted.")
+        } else { setDeleted(true) }
       }
       catch (error) {
         if (error.request.status !== 200) {
-          console.log("error in BE call")
-          console.error(error)
+          setAlert("Sorry, the secret note was not deleted.")
         }
-        return null
       }
+      
     };
     await deleteData()
+    
   };
 
   return (
@@ -277,8 +280,11 @@ function DisplayNoteScreen() {
                     <textarea id="text-area" disabled className="form-control card-text font-monospace" value={note} rows="4" cols="20"></textarea>
                   </pre>
                 </div>
-                <button className="btn btn-primary btn-lg" onClick={copySecretToClipboard}>Copy secret to clipboard</button>
-                <button className="btn btn-danger btn-lg" onClick={deleteNote}>Delete Note</button>
+                <div className="d-grid gap-2 col-lg-6 mx-auto">
+                  <button className="btn btn-primary btn-lg" onClick={copySecretToClipboard}>Copy secret to clipboard</button>
+                  { deleted === false && <button className="btn btn-danger btn-lg" onClick={deleteNote}>Delete Note</button> }
+                  { deleted === true && <button className="btn btn-dark btn-lg" disabled onClick={deleteNote}>Note was deleted!</button> }
+                </div>
               </div>
             </>
           }
@@ -296,7 +302,7 @@ function BagmanRouter({setAlert}) {
   return(
     <Routes>
       <Route index element={< SaveNoteScreen setAlert={setAlert}/>} />
-      <Route path="/:iv/:aes" element={<DisplayNoteScreen />} />
+      <Route path="/:iv/:aes" element={<DisplayNoteScreen setAlert={setAlert}/>} />
       <Route path="/unicorns" element={<UnicornsScreen />} />
     </Routes>
   )

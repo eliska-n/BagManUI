@@ -15,10 +15,14 @@
 
 $primary: #FCD021;
 $secondary: #A51080;
-$green: #104547;
 $lightpink: #edc5e6;
 $form-range-thumb-bg: $secondary;
 $form-range-track-bg: $lightpink;
+
+$btn-active-bg-shade-amount:      20%;
+$btn-active-bg-tint-amount:       50%;
+$btn-active-border-shade-amount:  25%;
+$btn-active-border-tint-amount:   50%;
 
 // 3. Include remainder of required Bootstrap stylesheets (including any separate color mode stylesheets)
 @import "../../node_modules/bootstrap/scss/variables";
@@ -67,6 +71,10 @@ body {
 	background-color: rgba(var(--bs-body-bg-rgb), 0.75);
 }
 
+// .btn:active {
+//   to make some other change on button click
+// }
+
 .mt-a-lot {
 	margin-top: ($spacer * 15);
   }
@@ -80,6 +88,10 @@ body {
     margin-right: 10%;
 }
 
+.form-check {
+  display: inline-table;
+}
+
 
 // You can add more styles here...
 
@@ -88,7 +100,6 @@ body {
 // Layout & components
 
 //@import "tables";
-//@import "transitions";
 //@import "dropdown";
 // @import "navbar";
 // @import "accordion";

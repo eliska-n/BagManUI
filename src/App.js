@@ -21,8 +21,35 @@ function SaveNoteScreen({ setAlert }) {
   const [url, setUrl] = useState(null); // to picture the url on UI
   const [disabledTextArea, setTextAreaDisabled] = useState(false) // to disable text area when save button is hit
   const [toggleOn, setToggle] = useState(true) // to change save button into start again button
-  const [expiration, setExpiration] = useState(0.5) // to set the time to delete the secret note on BE
-  const [limit, setLimit] = useState(1) // to set the limit of how many times the reciever can reveal the secret
+  const [expiration, setExpiration] = useState(1) // to set the time to delete the secret note on BE
+  const [burnChecked, setBurnChecked] = useState(true)
+
+  const expirationTranslationTable = {
+    1: {
+      seconds: 5*60,
+      name: "5 minutes",
+    },
+    2: {
+      seconds: 15*60,
+      name: "15 minutes",
+    },
+    3: {
+      seconds: 60*60,
+      name: "1 hour",
+    },
+    4: {
+      seconds: 24*60*60,
+      name: "1 day",
+    },
+    5: {
+      seconds: 7*24*60*60,
+      name: "7 days",
+    },
+    6: {
+      seconds: 30*24*60*60,
+      name: "30 days",
+    },
+  }
 
   const saveNote = async () => {
 
@@ -72,8 +99,14 @@ function SaveNoteScreen({ setAlert }) {
       baseURL: "/api",
     });
 
+    // set limit of views - if Burn after reading button is checked, make the limit one, if not, make it 100, because BE does not allow infinity, yet.
+    let limit = 1
+    if (burnChecked === 0) {
+      limit = 100
+    }
+
     try {
-      let resp = await client.post("/note", {id: ivBase64, secret: encryptedNoteBase64, expiration: expiration*60*60, views_limit: limit});
+      let resp = await client.post("/note", {id: ivBase64, secret: encryptedNoteBase64, expiration: expirationTranslationTable[expiration].seconds, views_limit: limit});
       if (resp.data.result !== "OK") {
         setAlert("Sorry, the secret note was not saved.")
         return
@@ -93,7 +126,8 @@ function SaveNoteScreen({ setAlert }) {
     setTextAreaDisabled(false)
     setUrl(null)
     setToggle(true)
-    setExpiration(0.5)
+    setExpiration(1)
+    setBurnChecked(true)
   };
 
   const copyURLToClipboard = () => {
@@ -121,18 +155,19 @@ function SaveNoteScreen({ setAlert }) {
                   <div className="py-2">
                     <textarea id="text-area" disabled={disabledTextArea} className="form-control card-text font-monospace" value={note} onChange={(event) => { setNote(event.target.value); }} rows="4" cols="20"></textarea>
                   </div>
-                  <div className="row justify-content-center">
-                    <div className="col-6">
-                      <label htmlFor="expiration" className="card-text">Set the expiration of the secret note</label>
-                      <input id="expiration" type="range" disabled={disabledTextArea} className="form-range" value={expiration} onChange={(event) => {setExpiration(event.target.value);}} min="0" max="24" step="0.25"></input>
-                      <p className="small card-text"> Expiration set to {(expiration | 0)} hours and {(expiration - (expiration | 0)) * 60} minutes.</p>
-                    </div>
-                    <div className="col-6">
-                      <label htmlFor="limit" className="card-text">Set the revelation limit.</label>
-                      <input id="limit" type="range" disabled={disabledTextArea} className="form-range" value={limit} onChange={(event) => {setLimit(event.target.value);}} min="1" max="10" step="1"></input>
-                      <p className="small card-text"> The secret gets destroyed after {limit} views.</p>
+
+                  <div className="row py-2 justify-content-center">
+                    <div className="col-12 col-lg-10">
+                      <label htmlFor="expiration" className="card-text">Expiration of the secret note is <b>{expirationTranslationTable[expiration].name}</b> </label>
+                      <input id="expiration" type="range" disabled={disabledTextArea} className="form-range" value={expiration} onChange={(event) => {setExpiration(event.target.value);}} min="1" max="6" step="1"></input>
+
+                      <div className="form-check form-switch">
+                        <input className="form-check-input" type="checkbox" role="switch" id="BurnAfterReading"  checked={burnChecked} onChange={() => {setBurnChecked(!burnChecked)}}></input>
+                        <label className="form-check-label" htmlFor="BurnAfterReading">Burn after reading</label>
+                      </div>
                     </div>
                   </div>
+
                   <div className="py-2">
                     <button className="btn btn-primary btn-lg" type="button" onClick={saveNote}>Save Note</button>
                   </div>

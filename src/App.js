@@ -22,6 +22,7 @@ function SaveNoteScreen({ setAlert }) {
   const [disabledTextArea, setTextAreaDisabled] = useState(false) // to disable text area when save button is hit
   const [toggleOn, setToggle] = useState(true) // to change save button into start again button
   const [expiration, setExpiration] = useState(0.5) // to set the time to delete the secret note on BE
+  const [limit, setLimit] = useState(1) // to set the limit of how many times the reciever can reveal the secret
 
   const saveNote = async () => {
 
@@ -72,7 +73,7 @@ function SaveNoteScreen({ setAlert }) {
     });
 
     try {
-      let resp = await client.post("/note", {id: ivBase64, secret: encryptedNoteBase64, expiration: expiration*60*60});
+      let resp = await client.post("/note", {id: ivBase64, secret: encryptedNoteBase64, expiration: expiration*60*60, views_limit: limit});
       if (resp.data.result !== "OK") {
         setAlert("Sorry, the secret note was not saved.")
         return
@@ -120,10 +121,21 @@ function SaveNoteScreen({ setAlert }) {
                   <div className="py-2">
                     <textarea id="text-area" disabled={disabledTextArea} className="form-control card-text font-monospace" value={note} onChange={(event) => { setNote(event.target.value); }} rows="4" cols="20"></textarea>
                   </div>
-                  <label htmlFor="expiration" className="card-text">Set the expiration of the secret note</label>
-                  <input id="expiration" type="range" disabled={disabledTextArea} className="form-range" value={expiration} onChange={(event) => {setExpiration(event.target.value);}} min="0" max="24" step="0.25"></input>
-                  <p className="small card-text"> Expiration set to {(expiration | 0)} hours and {(expiration - (expiration | 0)) * 60} minutes.</p>
-                  <button className="btn btn-primary btn-lg" type="button" onClick={saveNote}>Save Note</button>
+                  <div className="row justify-content-center">
+                    <div className="col-6">
+                      <label htmlFor="expiration" className="card-text">Set the expiration of the secret note</label>
+                      <input id="expiration" type="range" disabled={disabledTextArea} className="form-range" value={expiration} onChange={(event) => {setExpiration(event.target.value);}} min="0" max="24" step="0.25"></input>
+                      <p className="small card-text"> Expiration set to {(expiration | 0)} hours and {(expiration - (expiration | 0)) * 60} minutes.</p>
+                    </div>
+                    <div className="col-6">
+                      <label htmlFor="limit" className="card-text">Set the revelation limit.</label>
+                      <input id="limit" type="range" disabled={disabledTextArea} className="form-range" value={limit} onChange={(event) => {setLimit(event.target.value);}} min="1" max="10" step="1"></input>
+                      <p className="small card-text"> The secret gets destroyed after {limit} views.</p>
+                    </div>
+                  </div>
+                  <div className="py-2">
+                    <button className="btn btn-primary btn-lg" type="button" onClick={saveNote}>Save Note</button>
+                  </div>
                 </form>
               </div>
               </>
@@ -158,10 +170,11 @@ function SaveNoteScreen({ setAlert }) {
 
 
 
-function DisplayNoteScreen() {
+function DisplayNoteScreen( setAlert ) {
   const { iv, aes } = useParams();
   const [note, setNote] = useState(null);
   const [showNote, setShow] = useState(false);
+  const [deleted, setDeleted] = useState(false)
 
   const revealSecret = async () => {
 
@@ -213,17 +226,19 @@ function DisplayNoteScreen() {
       let resp = null
       try {
         resp = await axios.delete(`/api/note/${iv}`)
-        return resp.data.message
+        if (resp.data.result !== "OK") {
+          setAlert("Sorry, the secret note was not deleted.")
+        } else { setDeleted(true) }
       }
       catch (error) {
         if (error.request.status !== 200) {
-          console.log("error in BE call")
-          console.error(error)
+          setAlert("Sorry, the secret note was not deleted.")
         }
-        return null
       }
+      
     };
     await deleteData()
+    
   };
 
   return (
@@ -265,8 +280,11 @@ function DisplayNoteScreen() {
                     <textarea id="text-area" disabled className="form-control card-text font-monospace" value={note} rows="4" cols="20"></textarea>
                   </pre>
                 </div>
-                <button className="btn btn-primary btn-lg" onClick={copySecretToClipboard}>Copy secret to clipboard</button>
-                <button className="btn btn-danger btn-lg" onClick={deleteNote}>Delete Note</button>
+                <div className="d-grid gap-2 col-lg-6 mx-auto">
+                  <button className="btn btn-primary btn-lg" onClick={copySecretToClipboard}>Copy secret to clipboard</button>
+                  { deleted === false && <button className="btn btn-danger btn-lg" onClick={deleteNote}>Delete Note</button> }
+                  { deleted === true && <button className="btn btn-dark btn-lg" disabled onClick={deleteNote}>Note was deleted!</button> }
+                </div>
               </div>
             </>
           }
@@ -284,7 +302,7 @@ function BagmanRouter({setAlert}) {
   return(
     <Routes>
       <Route index element={< SaveNoteScreen setAlert={setAlert}/>} />
-      <Route path="/:iv/:aes" element={<DisplayNoteScreen />} />
+      <Route path="/:iv/:aes" element={<DisplayNoteScreen setAlert={setAlert}/>} />
       <Route path="/unicorns" element={<UnicornsScreen />} />
     </Routes>
   )

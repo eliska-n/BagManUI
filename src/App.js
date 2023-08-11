@@ -126,7 +126,8 @@ function SaveNoteScreen({ setAlert }) {
     setTextAreaDisabled(false)
     setUrl(null)
     setToggle(true)
-    setExpiration(0.5)
+    setExpiration(1)
+    setBurnChecked(true)
   };
 
   const copyURLToClipboard = () => {

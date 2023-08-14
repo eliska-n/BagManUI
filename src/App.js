@@ -101,7 +101,7 @@ function SaveNoteScreen({ setAlert }) {
 
     // set limit of views - if Burn after reading button is checked, make the limit one, if not, make it 100, because BE does not allow infinity, yet.
     let limit = 1
-    if (burnChecked === 0) {
+    if (burnChecked === false) {
       limit = 100
     }
 

@@ -319,6 +319,7 @@ function DisplayNoteScreen( setAlert ) {
                   <button className="btn btn-primary btn-lg" onClick={copySecretToClipboard}>Copy secret to clipboard</button>
                   { deleted === false && <button className="btn btn-danger btn-lg" onClick={deleteNote}>Delete Note</button> }
                   { deleted === true && <button className="btn btn-dark btn-lg" disabled onClick={deleteNote}>Note was deleted!</button> }
+                  <a class="btn btn-secondary btn-lg" aria-current="page" href="/">Create new secret</a>
                 </div>
               </div>
             </>

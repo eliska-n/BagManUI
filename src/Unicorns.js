@@ -86,30 +86,8 @@ function UnicornsScreen() {
           </div>
         </div>
       </div>
-
-      <div className="row justify-content-center">
-        <div className="col-12 col-lg-6">
-          <ul class="nav nav-pills justify-content-center">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="/">Back to the app</a>
-            </li>
-          </ul>
-        </div>
-      </div>
     </>
   )
 }
 
-
-function LinkToUnicorns() {
-  return (
-    <div className="row py-4 justify-content-center">
-      <div className="col-12 col-lg-6">
-        <a class="link-secondary" aria-current="page" href="#/unicorns">Is it safe? Tell me how it works!</a>
-      </div>
-    </div>
-  )
-}
-
 export { UnicornsScreen };
-export { LinkToUnicorns };

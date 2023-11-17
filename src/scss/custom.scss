@@ -50,6 +50,7 @@ $btn-active-border-tint-amount:   50%;
 @import "../../node_modules/bootstrap/scss/card";
 @import "../../node_modules/bootstrap/scss/carousel";
 @import "../../node_modules/bootstrap/scss/nav";
+@import "../../node_modules/bootstrap/scss/navbar";
 @import "../../node_modules/bootstrap/scss/alert";
 @import "../../node_modules/bootstrap/scss/close";
 @import "../../node_modules/bootstrap/scss/transitions";
@@ -77,7 +78,7 @@ body {
 // }
 
 .mt-a-lot {
-	margin-top: ($spacer * 15);
+	margin-top: ($spacer * 10);
   }
 
 .alerts {

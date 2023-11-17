@@ -5,7 +5,8 @@ import { useState } from 'react';
 import { Base64 } from 'js-base64';
 import axios from 'axios';
 
-import {LinkToUnicorns, UnicornsScreen} from './Unicorns'
+import {UnicornsScreen} from './Unicorns'
+import {Navbar} from "./navbar"
 
 
 // TODO - kde by tohle mělo bydlet?
@@ -194,11 +195,6 @@ function SaveNoteScreen({ setAlert }) {
           </div>
         </div>
       </div>
-
-      < LinkToUnicorns />
-
-
-
     </>
   );
 }
@@ -319,7 +315,6 @@ function DisplayNoteScreen( setAlert ) {
                   <button className="btn btn-primary btn-lg" onClick={copySecretToClipboard}>Copy secret to clipboard</button>
                   { deleted === false && <button className="btn btn-danger btn-lg" onClick={deleteNote}>Delete Note</button> }
                   { deleted === true && <button className="btn btn-dark btn-lg" disabled onClick={deleteNote}>Note was deleted!</button> }
-                  <a class="btn btn-secondary btn-lg" aria-current="page" href="/">Create new secret</a>
                 </div>
               </div>
             </>
@@ -328,8 +323,6 @@ function DisplayNoteScreen( setAlert ) {
 
         </div>
       </div>
-
-      < LinkToUnicorns />
     </>
   );
 }
@@ -358,6 +351,7 @@ function App() {
         </div>
       </div>
       }
+      <Navbar />
       <div className="container text-center">
           <BagmanRouter setAlert={setAlert}/>
       </div>

@@ -21,7 +21,7 @@ function SaveNoteScreen({ setAlert }) {
   const [url, setUrl] = useState(null); // to picture the url on UI
   const [disabledTextArea, setTextAreaDisabled] = useState(false) // to disable text area when save button is hit
   const [toggleOn, setToggle] = useState(true) // to change save button into start again button
-  const [expiration, setExpiration] = useState(1) // to set the time to delete the secret note on BE
+  const [expiration, setExpiration] = useState(5) // to set the time to delete the secret note on BE
   const [burnChecked, setBurnChecked] = useState(false)
 
   const expirationTranslationTable = {

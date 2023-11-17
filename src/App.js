@@ -22,7 +22,7 @@ function SaveNoteScreen({ setAlert }) {
   const [disabledTextArea, setTextAreaDisabled] = useState(false) // to disable text area when save button is hit
   const [toggleOn, setToggle] = useState(true) // to change save button into start again button
   const [expiration, setExpiration] = useState(1) // to set the time to delete the secret note on BE
-  const [burnChecked, setBurnChecked] = useState(true)
+  const [burnChecked, setBurnChecked] = useState(false)
 
   const expirationTranslationTable = {
     1: {

@@ -21,8 +21,8 @@ function SaveNoteScreen({ setAlert }) {
   const [url, setUrl] = useState(null); // to picture the url on UI
   const [disabledTextArea, setTextAreaDisabled] = useState(false) // to disable text area when save button is hit
   const [toggleOn, setToggle] = useState(true) // to change save button into start again button
-  const [expiration, setExpiration] = useState(1) // to set the time to delete the secret note on BE
-  const [burnChecked, setBurnChecked] = useState(true)
+  const [expiration, setExpiration] = useState(5) // to set the time to delete the secret note on BE
+  const [burnChecked, setBurnChecked] = useState(false)
 
   const expirationTranslationTable = {
     1: {
@@ -319,6 +319,7 @@ function DisplayNoteScreen( setAlert ) {
                   <button className="btn btn-primary btn-lg" onClick={copySecretToClipboard}>Copy secret to clipboard</button>
                   { deleted === false && <button className="btn btn-danger btn-lg" onClick={deleteNote}>Delete Note</button> }
                   { deleted === true && <button className="btn btn-dark btn-lg" disabled onClick={deleteNote}>Note was deleted!</button> }
+                  <a class="btn btn-secondary btn-lg" aria-current="page" href="/">Create new secret</a>
                 </div>
               </div>
             </>

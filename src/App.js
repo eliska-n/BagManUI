@@ -188,13 +188,6 @@ function SaveNoteScreen({ setAlert }) {
     return password;
   };
 
-  const copyGeneratedPassword = () => {
-    const passwordField = document.getElementById('generatedPassword');
-    passwordField.select();
-    document.execCommand('copy');
-    setAlert('Password copied to clipboard!');
-  };
-
   return (
     <>
       <div className="row py-3 justify-content-center">

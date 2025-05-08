@@ -22,8 +22,20 @@ function SaveNoteScreen({ setAlert }) {
   const [url, setUrl] = useState(null); // to picture the url on UI
   const [disabledTextArea, setTextAreaDisabled] = useState(false) // to disable text area when save button is hit
   const [toggleOn, setToggle] = useState(true) // to change save button into start again button
-  const [expiration, setExpiration] = useState(5) // to set the time to delete the secret note on BE
+  const [expiration, setExpiration] = useState(4) // to set the time to delete the secret note on BE
   const [burnChecked, setBurnChecked] = useState(false)
+  const [passwordGenerator, setPasswordGenerator] = useState(false)
+  
+  // Password generator states
+  const [passwordLength, setPasswordLength] = useState(24);
+  const [includeNumbers, setIncludeNumbers] = useState(true);
+  const [includeLowercase, setIncludeLowercase] = useState(true);
+  const [includeUppercase, setIncludeUppercase] = useState(true);
+  const [beginWithLetter, setBeginWithLetter] = useState(true);
+  const [includeSymbols, setIncludeSymbols] = useState(true);
+  const [noSimilarChars, setNoSimilarChars] = useState(false);
+  const [noDuplicateChars, setNoDuplicateChars] = useState(false);
+  const [noSequentialChars, setNoSequentialChars] = useState(true);
 
   const expirationTranslationTable = {
     1: {
@@ -31,28 +43,30 @@ function SaveNoteScreen({ setAlert }) {
       name: "5 minutes",
     },
     2: {
-      seconds: 15*60,
-      name: "15 minutes",
-    },
-    3: {
       seconds: 60*60,
       name: "1 hour",
     },
-    4: {
+    3: {
       seconds: 24*60*60,
       name: "1 day",
     },
-    5: {
+    4: {
       seconds: 7*24*60*60,
       name: "7 days",
     },
-    6: {
+    5: {
       seconds: 30*24*60*60,
       name: "30 days",
+    },
+    6: {
+      seconds: 90*24*60*60,
+      name: "90 days",
     },
   }
 
   const saveNote = async () => {
+
+    
 
     const Uint8ArrayToBase64 = (array) => {
       return Base64.fromUint8Array(array, true);
@@ -127,12 +141,58 @@ function SaveNoteScreen({ setAlert }) {
     setTextAreaDisabled(false)
     setUrl(null)
     setToggle(true)
-    setExpiration(1)
-    setBurnChecked(true)
+    setExpiration(4)
+    setBurnChecked(false)
+    setPasswordGenerator(false)
   };
 
   const copyURLToClipboard = () => {
     navigator.clipboard.writeText(url)
+  };
+
+  const generatePassword = () => {
+    let chars = '';
+    if (includeNumbers) chars += '0123456789';
+    if (includeLowercase) chars += 'abcdefghijklmnopqrstuvwxyz';
+    if (includeUppercase) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    if (includeSymbols) chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+    if (noSimilarChars) {
+      chars = chars.replace(/[iIlL1oO0]/g, '');
+    }
+
+    let password = '';
+    const firstChar = beginWithLetter ? 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' : chars;
+
+    // Generate first character if beginWithLetter is true
+    if (beginWithLetter) {
+      password += firstChar.charAt(Math.floor(Math.random() * firstChar.length));
+    }
+
+    // Generate remaining characters
+    while (password.length < passwordLength) {
+      const char = chars.charAt(Math.floor(Math.random() * chars.length));
+      
+      if (noDuplicateChars && password.includes(char)) continue;
+      
+      if (noSequentialChars && password.length > 0) {
+        const lastChar = password[password.length - 1];
+        const charCode = char.charCodeAt(0);
+        const lastCharCode = lastChar.charCodeAt(0);
+        if (Math.abs(charCode - lastCharCode) === 1) continue;
+      }
+      
+      password += char;
+    }
+
+    return password;
+  };
+
+  const copyGeneratedPassword = () => {
+    const passwordField = document.getElementById('generatedPassword');
+    passwordField.select();
+    document.execCommand('copy');
+    setAlert('Password copied to clipboard!');
   };
 
   return (
@@ -143,36 +203,163 @@ function SaveNoteScreen({ setAlert }) {
         </div>
       </div>
       <div className="row py-4 justify-content-center">
-        <div className="col-12 col-lg-6">
-
-          <div className="card shadow">
+        <div className="col-12">
+          <div className="card shadow" style={{maxWidth: "45rem", margin: "0 auto"}}>
             {toggleOn === true &&
               <>
               <div className="card-header">
-                <h1>Enter a secret note</h1>
+                <h1>Create the Secret Note</h1>
               </div>
               <div className="card-body">
                 <form id="note-entry">
                   <div className="py-2">
-                    <textarea id="text-area" disabled={disabledTextArea} className="form-control card-text font-monospace" value={note} onChange={(event) => { setNote(event.target.value); }} rows="4" cols="20"></textarea>
+                    <textarea id="text-area" disabled={disabledTextArea} className="form-control card-text font-monospace" value={note} onChange={(event) => { setNote(event.target.value); }} rows="4"></textarea>
                   </div>
 
                   <div className="row py-2 justify-content-center">
                     <div className="col-12 col-lg-10">
-                      <label htmlFor="expiration" className="card-text">Expiration of the secret note is <b>{expirationTranslationTable[expiration].name}</b> </label>
+                      <label htmlFor="expiration" className="card-text">Expiration of the Secret Note is <b>{expirationTranslationTable[expiration].name}</b> </label>
                       <input id="expiration" type="range" disabled={disabledTextArea} className="form-range" value={expiration} onChange={(event) => {setExpiration(event.target.value);}} min="1" max="6" step="1"></input>
 
                       <div className="form-check form-switch">
                         <input className="form-check-input" type="checkbox" role="switch" id="BurnAfterReading"  checked={burnChecked} onChange={() => {setBurnChecked(!burnChecked)}}></input>
-                        <label className="form-check-label" htmlFor="BurnAfterReading">Burn after reading</label>
+                        <label className="form-check-label" htmlFor="BurnAfterReading">Burn the Secret Note after reading</label>
                       </div>
                     </div>
                   </div>
 
                   <div className="py-2">
-                    <button className="btn btn-primary btn-lg" type="button" onClick={saveNote}>Save Note</button>
+                    <button className="btn btn-primary btn-lg" type="button" onClick={saveNote}>🔒 Submit Securely</button>
                   </div>
+                  <div className="py-2" hidden={passwordGenerator === true}>
+                    <button className="btn btn-link-outline" type="button" onClick={() => {setPasswordGenerator(!passwordGenerator)}}>Password generator</button>
+                  </div>
+
                 </form>
+
+                  <div hidden={passwordGenerator === false} style={{padding: "0 10rem"}} className="pt-4">
+                    <h3>Password generator</h3>
+                    
+                    <div className="py-1">
+                      <label htmlFor="passwordLength" className="form-label">Password Length</label>
+                      <input 
+                        type="number" 
+                        className="form-control" 
+                        id="passwordLength" 
+                        min="5" 
+                        max="128" 
+                        value={passwordLength}
+                        onChange={(e) => setPasswordLength(parseInt(e.target.value) || 24)}
+                      />
+                    </div>
+                    
+                    <div style={{textAlign: "left"}} className="py-1">
+                      <input 
+                        className="form-check-input" 
+                        type="checkbox" 
+                        id="includeNumbers" 
+                        checked={includeNumbers}
+                        onChange={(e) => setIncludeNumbers(e.target.checked)}
+                      />
+                      <label className="form-check-label" htmlFor="includeNumbers" style={{paddingLeft: "0.5rem"}} title="Include numbers: 0123456789">
+                        Numbers
+                      </label>
+                    </div>
+
+                    <div style={{textAlign: "left"}} className="py-1">
+                      <input 
+                        className="form-check-input" 
+                        type="checkbox" 
+                        id="includeLowercase" 
+                        checked={includeLowercase}
+                        onChange={(e) => setIncludeLowercase(e.target.checked)}
+                      />
+                      <label className="form-check-label" htmlFor="includeLowercase" style={{paddingLeft: "0.5rem"}} title="Include lowercase characters: abcdefghijklmnopqrstuvwxyz">
+                        Lowercase Characters
+                      </label>
+                    </div>
+
+                    <div style={{textAlign: "left"}} className="py-1">
+                      <input 
+                        className="form-check-input" 
+                        type="checkbox" 
+                        id="includeUppercase" 
+                        checked={includeUppercase}
+                        onChange={(e) => setIncludeUppercase(e.target.checked)}
+                      />
+                      <label className="form-check-label" htmlFor="includeUppercase" style={{paddingLeft: "0.5rem"}} title="Include uppercase characters: ABCDEFGHIJKLMNOPQRSTUVWXYZ">
+                        Uppercase Characters
+                      </label>
+                    </div>
+
+                    <div style={{textAlign: "left"}} className="py-1">
+                      <input 
+                        className="form-check-input" 
+                        type="checkbox" 
+                        id="beginWithLetter" 
+                        checked={beginWithLetter}
+                        onChange={(e) => setBeginWithLetter(e.target.checked)}
+                      />
+                      <label className="form-check-label" htmlFor="beginWithLetter" style={{paddingLeft: "0.5rem"}} title="Begin with a letter, not a number or symbol">
+                        Begin With A Letter
+                      </label>
+                    </div>
+
+                    <div style={{textAlign: "left"}} className="py-1">
+                      <input 
+                        className="form-check-input" 
+                        type="checkbox" 
+                        id="includeSymbols" 
+                        checked={includeSymbols}
+                        onChange={(e) => setIncludeSymbols(e.target.checked)}
+                      />
+                      <label className="form-check-label" htmlFor="includeSymbols" style={{paddingLeft: "0.5rem"}} title="Include symbols: !@#$%^&*()_+-=[]{}|;:,.<>?">
+                        Include Symbols
+                      </label>
+                    </div>
+
+                    <div style={{textAlign: "left"}} className="py-1">
+                      <input 
+                        className="form-check-input" 
+                        type="checkbox" 
+                        id="noSimilarChars" 
+                        checked={noSimilarChars}
+                        onChange={(e) => setNoSimilarChars(e.target.checked)}
+                      />
+                      <label className="form-check-label" htmlFor="noSimilarChars" style={{paddingLeft: "0.5rem"}} title="Don't include similar characters: i, I, 1, l, o, O, 0">
+                        No Similar Characters
+                      </label>
+                    </div>
+
+                    <div style={{textAlign: "left"}} className="py-1">
+                      <input 
+                        className="form-check-input" 
+                        type="checkbox" 
+                        id="noDuplicateChars" 
+                        checked={noDuplicateChars}
+                        onChange={(e) => setNoDuplicateChars(e.target.checked)}
+                      />
+                      <label className="form-check-label" htmlFor="noDuplicateChars" style={{paddingLeft: "0.5rem"}} title="Don't include duplicate characters">
+                        No Duplicate Characters
+                      </label>
+                    </div>
+
+                    <div style={{textAlign: "left"}} className="pt-1 pb-3">
+                      <input 
+                        className="form-check-input" 
+                        type="checkbox" 
+                        id="noSequentialChars" 
+                        checked={noSequentialChars}
+                        onChange={(e) => setNoSequentialChars(e.target.checked)}
+                      />
+                      <label className="form-check-label" htmlFor="noSequentialChars" style={{paddingLeft: "0.5rem"}} title="Don't include sequential characters (e.g. abc, 123, qwerty, asdfgh)">
+                        No Sequential Characters
+                      </label>
+                    </div>
+
+                    <button className="btn btn-primary" onClick={() => {setNote(generatePassword())}}>Generate Password</button>
+
+                  </div>
               </div>
               </>
             }
@@ -275,8 +462,8 @@ function DisplayNoteScreen( setAlert ) {
   return (
     <>
       <div className="row py-5 mt-a-lot justify-content-center">
-        <div className="col-12 col-lg-6">
-          <div className="card shadow">
+        <div className="col-12">
+          <div className="card shadow" style={{maxWidth: "45rem", margin: "0 auto"}}>
 
           {showNote === false &&
             <>
@@ -308,7 +495,7 @@ function DisplayNoteScreen( setAlert ) {
               <div className="card-body">
                 <div className="py-2">
                   <pre>
-                    <textarea id="text-area" disabled className="form-control card-text font-monospace" value={note} rows="4" cols="20"></textarea>
+                    <textarea id="text-area" disabled className="form-control card-text font-monospace" value={note} rows="4"></textarea>
                   </pre>
                 </div>
                 <div className="d-grid gap-2 col-lg-6 mx-auto">

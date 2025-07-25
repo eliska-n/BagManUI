@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import { Base64 } from 'js-base64';
 import axios from 'axios';
+import { QRCodeSVG } from 'qrcode.react';
 
 import {UnicornsScreen} from './Unicorns'
 import {Navbar} from "./navbar"
@@ -364,6 +365,9 @@ function SaveNoteScreen({ setAlert }) {
               </div>
               <div className="card-body">
                 <p className="small card-text">{url}</p>
+                <div className="py-3 d-flex justify-content-center">
+                  <QRCodeSVG value={url} size={200} />
+                </div>
                 <div className="d-grid gap-2 col-lg-6 mx-auto">
                   <button className="btn btn-primary btn-lg" type="button" onClick={copyURLToClipboard}>Copy URL to clipboard</button>
                   <button className="btn btn-secondary btn-sm" type="button" onClick={startAgain}>Start Again</button>
